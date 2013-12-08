@@ -9,10 +9,10 @@ extern "C" {
 enum end_state_id
 {
     END_START_UP = 0,
-	END_IDLE_AND_WAITING,
-	END_BR_AND_WAITING,
-	END_BRSW,
-	END_STATE_MAX
+    END_IDLE_AND_WAITING,
+    END_BR_AND_WAITING,
+    END_BRSW,
+    END_STATE_MAX
 };
 struct aps_controller;
 void end_state_init(struct aps_controller* aps);
