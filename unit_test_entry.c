@@ -16,10 +16,10 @@ extern void swtich_idle_transition_test_run(void);
 
 void unit_test(void)
 {
-	node_start_up_test_run();
-	node_start_up_neib_test_run();
+    node_start_up_test_run();
+    node_start_up_neib_test_run();
     switching_state_test_run();
-	swtich_idle_transition_test_run();
-	switch_to_switch_test_run();
-	passthru_test_run();
+    swtich_idle_transition_test_run();
+    switch_to_switch_test_run();
+    passthru_test_run();
 }

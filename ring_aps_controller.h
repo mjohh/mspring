@@ -1,16 +1,10 @@
-//
-//  ring_aps_controller.h
-//  mspring
-//
-//  Created by hmfynn on 12/7/13.
-//  Copyright (c) 2013 hmf. All rights reserved.
-//
-
 #ifndef mspring_ring_aps_controller_h
 #define mspring_ring_aps_controller_h
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
 struct aps_controller
 {
     // input
