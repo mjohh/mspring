@@ -29,7 +29,6 @@ struct aps_controller
     // status
     enum side tail_side; // for wtr proc
     enum side short_side;
-    //enum node_state hw_state;
     enum primary_state_id cur_prim_state;
     enum switch_state_id cur_sw_state;
     enum end_state_id cur_end_state;
@@ -45,9 +44,9 @@ struct aps_controller
     int wtr_time; // second
     
     // output hook
-    int (*set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2);
-    int (*update_hw)(int ringid, int cardid[], int portid[], enum node_state state);
-    int (*start_wtr)(int ringid, int enable, int sec);
+    int (*output_set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2);
+    int (*output_update_hw)(int ringid, int cardid[], int portid[], enum node_state state);
+    int (*output_start_wtr)(int ringid, int enable, int sec);
 };
 
 
@@ -93,17 +92,17 @@ do{\
 
 
 int aps_controller_init(struct aps_controller* aps,
-                        int (*set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2),
-                        int (*update_hw)(int ringid, int cardid[], int portid[], enum node_state state),
-                        int (*start_wtr)(int ringid, int enable, int sec));
+                        int (*output_set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2),
+                        int (*output_update_hw)(int ringid, int cardid[], int portid[], enum node_state state),
+                        int (*output_start_wtr)(int ringid, int enable, int sec));
 void aps_controller_fini(struct aps_controller* aps);
 void aps_controller_run(struct aps_controller* aps);
 
-void aps_update_kbyte(struct aps_controller * aps, enum side side, struct k1k2 * k1k2);
-void aps_update_dq(struct aps_controller * aps, enum side side, enum dq dq);
-void aps_update_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cmd ext_cmd);
-void aps_update_ne_ready_flag(struct aps_controller * aps, int is_ne_ready);
-void aps_update_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout);
+void aps_input_kbyte(struct aps_controller * aps, enum side side, struct k1k2 * k1k2);
+void aps_input_dq(struct aps_controller * aps, enum side side, enum dq dq);
+void aps_input_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cmd ext_cmd);
+void aps_input_ne_ready_flag(struct aps_controller * aps, int is_ne_ready);
+void aps_input_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout);
 
 #ifdef __cplusplus
     }

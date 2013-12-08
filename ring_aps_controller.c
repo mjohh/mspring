@@ -11,9 +11,9 @@
 #include <memory.h>
 
 int aps_controller_init(struct aps_controller* aps,
-                        int (*set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2),
-                        int (*update_hw)(int ringid, int cardid[], int portid[], enum node_state state),
-                        int (*start_wtr)(int ringid, int enable, int sec))
+                        int (*output_set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2),
+                        int (*output_update_hw)(int ringid, int cardid[], int portid[], enum node_state state),
+                        int (*output_start_wtr)(int ringid, int enable, int sec))
 {
     char k1 = DEFAULT_K1BYTE;
     char k2 = DEFAULT_K2BYTE;
@@ -37,9 +37,9 @@ int aps_controller_init(struct aps_controller* aps,
 	wtr_state_init(aps);
 	prim_state_init(aps);
     
-    aps->set_kbyte = set_kbyte;
-    aps->update_hw = update_hw;
-    aps->start_wtr = start_wtr;
+    aps->output_set_kbyte = output_set_kbyte;
+    aps->output_update_hw = output_update_hw;
+    aps->output_start_wtr = output_start_wtr;
     return 0;
 }
 
@@ -58,20 +58,20 @@ void aps_controller_run(struct aps_controller* aps)
     prim_state_run(aps);
 }
 
-void aps_update_kbyte(struct aps_controller * aps, enum side side, struct k1k2 * k1k2)
+void aps_input_kbyte(struct aps_controller * aps, enum side side, struct k1k2 * k1k2)
 {
     assert(aps && k1k2);
     assert(WEST == side || EAST == side);
     memcpy(&aps->drv_kbytes[side], k1k2, sizeof(*k1k2));
 }
-void aps_update_dq(struct aps_controller * aps, enum side side, enum dq dq)
+void aps_input_dq(struct aps_controller * aps, enum side side, enum dq dq)
 {
     assert(aps);
     assert(WEST == side || EAST == side);
     assert(dq >= DQ_CLEAR && dq < NUM_DQ_CODES);
     aps->dq[side] = dq;
 }
-void aps_update_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cmd ext_cmd)
+void aps_input_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cmd ext_cmd)
 {
     assert(aps);
     assert(WEST == side || EAST == side);
@@ -79,12 +79,12 @@ void aps_update_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cm
     aps->ext_cmd = ext_cmd;
     aps->ext_side = side;
 }
-void aps_update_ne_ready_flag(struct aps_controller * aps, int is_ne_ready)
+void aps_input_ne_ready_flag(struct aps_controller * aps, int is_ne_ready)
 {
     assert(aps);
     aps->is_ne_ready = is_ne_ready;
 }
-void aps_update_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout)
+void aps_input_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout)
 {
     assert(aps);
     aps->is_wtr_timeout = is_wtr_timeout;

@@ -21,12 +21,12 @@ int is_to_switch(struct aps_controller* aps)
     enum brq_code w_brq = get_brq_for_me(aps, WEST);
 	enum brq_code e_brq = get_brq_for_me(aps, EAST);
     enum brq_code hi_brq = get_highest_brq(aps);
-
-	if(RMAX(w_brq, e_brq) != NR && 
-	   RMAX(w_brq, e_brq) != RR && 
+    
+	if(RMAX(w_brq, e_brq) != NR &&
+	   RMAX(w_brq, e_brq) != RR &&
 	   (is_coexist_brq(RMAX(w_brq, e_brq), hi_brq)))
 	{
-	    return 1;	
+	    return 1;
 	}
 	return 0;
 }
@@ -73,23 +73,23 @@ int is_to_pass(struct aps_controller* aps)
 	enum brq_code w_brq = get_brq_for_me(aps, WEST);
 	enum brq_code e_brq = get_brq_for_me(aps, EAST);
     enum brq_code hi_brq = get_highest_brq(aps);
- 
+    
 	if(NR != RMAX(w_brq, e_brq) && is_coexist_brq(RMAX(w_brq, e_brq), hi_brq))
 		return 0;
-
+    
 	if(RMAX(w_brq, e_brq) < hi_brq)
-	    return 1;	
-
+	    return 1;
+    
 	if(NR == RMAX(w_brq, e_brq))
 	{
 		if(!is_default_kbytes(&DRV_KBYTES(WEST)) && !is_kbyte_for_me(aps, WEST))
 		{
-		    return 1;	
+		    return 1;
 		}
 		if(!is_default_kbytes(&DRV_KBYTES(EAST)) && !is_kbyte_for_me(aps, EAST))
 		{
-		    return 1;	
-		}	
+		    return 1;
+		}
 	}
 	return 0;
 }
@@ -98,7 +98,7 @@ int is_to_pass(struct aps_controller* aps)
 int is_to_k_pass(struct aps_controller* aps)
 {
     return 	is_to_pass(aps) &&
-		    get_highest_brq(aps) == EXER;
+    get_highest_brq(aps) == EXER;
 }
 
 int is_to_idle(struct aps_controller* aps)
@@ -113,22 +113,22 @@ int is_to_wtr(struct aps_controller* aps)
 	int is_long = 0;
 	enum side new_side;
 	enum brq_code new_brq;
-
+    
 	if(NUM_SIDES == aps->short_side)
 	{
 	    return 0;
 	}
-
+    
     get_reason_brq_and_short_side(aps, &new_brq, &new_side);
 	if(new_side != aps->short_side)
 	{
         return 0;
 	}
-
+    
 	short_brq = get_kbyte_brq_for_me(aps, aps->short_side);
 	is_for_me = (DRV_KBYTES_DEST(OTHER_SIDE(aps->short_side)) == MY_NODE_ID);
 	is_long = (DRV_KBYTES_PATH(OTHER_SIDE(aps->short_side)) == LONG_PATH);
-
+    
 	// tail end
 	if(RR == short_brq /*&& is_long && is_for_me*/)
 	{
@@ -137,7 +137,7 @@ int is_to_wtr(struct aps_controller* aps)
 		    //if(get_ext_brq(aps) <= EXER)
 			if(NR == get_ext_brq(aps))
 			{
-			    return 1;	
+			    return 1;
 			}
 		}
 	}
@@ -149,7 +149,7 @@ int is_to_wtr(struct aps_controller* aps)
 		    //if(get_ext_brq(aps) <= EXER)
 			if(NR == get_ext_brq(aps))
 			{
-			    return 1;	
+			    return 1;
 			}
 		}
 	}
@@ -162,8 +162,8 @@ int is_only_rcv_brq_it_sourcing_both_sides(struct aps_controller* aps)
 	enum brq_code e_hi_brq = get_highest_brq_on_side(aps, EAST);
 	enum brq_code w_kbyte_brq = get_kbyte_brq(aps, WEST);
 	enum brq_code e_kbyte_brq = get_kbyte_brq(aps, EAST);
-
-	return (w_hi_brq == w_kbyte_brq && e_hi_brq == e_kbyte_brq && 
+    
+	return (w_hi_brq == w_kbyte_brq && e_hi_brq == e_kbyte_brq &&
 	        DRV_KBYTES_SRC(WEST) == MY_NODE_ID && DRV_KBYTES_SRC(EAST) == MY_NODE_ID);
 }
 
@@ -265,11 +265,11 @@ static void switch_state_change(struct aps_controller* aps)
 	}
 	else if(is_to_wtr(aps))
 	{
-	   // note: here need not exit switch and it's sub states
-	   // because switch state should be reserved for returning from wtr some time.
-	   // goto next layer of wtr sm 
-	   set_state(aps, PRIM_WTR);
-	   wtr_state_run(aps);
+        // note: here need not exit switch and it's sub states
+        // because switch state should be reserved for returning from wtr some time.
+        // goto next layer of wtr sm
+        set_state(aps, PRIM_WTR);
+        wtr_state_run(aps);
 	}
 	else if(is_to_switch(aps))
 	{
@@ -302,7 +302,7 @@ static void pass_state_change(struct aps_controller* aps)
 	}
     // keep pass state
 	else if(is_recv_same_pri_long_brq_to_me(aps) ||
-		is_recv_long_brq_and_nr_from_same_neib(aps) || is_to_pass(aps))
+            is_recv_long_brq_and_nr_from_same_neib(aps) || is_to_pass(aps))
 	{
         set_state(aps, PRIM_PASS);
 		update_node_state(aps, PASS);
@@ -378,7 +378,7 @@ static void wtr_state_change(struct aps_controller* aps)
 	else if(is_to_wtr(aps))
 	{
 	    set_state(aps, PRIM_WTR);
-        wtr_state_run(aps);	
+        wtr_state_run(aps);
 	}
 	else if(is_to_switch(aps))
 	{
@@ -413,20 +413,20 @@ char* prim_state_name(int state)
 {
     switch(state)
 	{
-	case PRIM_START_UP:
-	    return "PRIM_START_UP";
-	case PRIM_IDLE:
-	    return "PRIM_IDLE";
-	case PRIM_SWITCH:
-	    return "PRIM_SWITCH";
-	case PRIM_WTR:
-	    return "PRIM_WTR";
-	case PRIM_PASS:
-	    return "PRIM_PASS";
-	case PRIM_K_PASS:
-	    return "PRIM_K_PASS";
-	default:
-		return "err prim state";
+        case PRIM_START_UP:
+            return "PRIM_START_UP";
+        case PRIM_IDLE:
+            return "PRIM_IDLE";
+        case PRIM_SWITCH:
+            return "PRIM_SWITCH";
+        case PRIM_WTR:
+            return "PRIM_WTR";
+        case PRIM_PASS:
+            return "PRIM_PASS";
+        case PRIM_K_PASS:
+            return "PRIM_K_PASS";
+        default:
+            return "err prim state";
 	}
 }
 
@@ -439,42 +439,42 @@ void prim_state_init(struct aps_controller* aps)
 }
 
 void prim_state_run(struct aps_controller* aps)
-{   
+{
 	assert(aps);
 	
 	switch(aps->cur_prim_state)
 	{
-    case PRIM_START_UP:
-		start_up_state_change(aps);
-		break;
-	case PRIM_IDLE:
-		idle_state_change(aps);
-		break;
-	case PRIM_SWITCH:
-		switch_state_change(aps);
-		break;
-	case PRIM_WTR:
-		wtr_state_change(aps);
-		break;
-	case PRIM_PASS:
-		pass_state_change(aps);
-		break;
-	case PRIM_K_PASS:
-		k_pass_state_change(aps);
-		break;
-	default:
-		assert(0);
-		break;
+        case PRIM_START_UP:
+            start_up_state_change(aps);
+            break;
+        case PRIM_IDLE:
+            idle_state_change(aps);
+            break;
+        case PRIM_SWITCH:
+            switch_state_change(aps);
+            break;
+        case PRIM_WTR:
+            wtr_state_change(aps);
+            break;
+        case PRIM_PASS:
+            pass_state_change(aps);
+            break;
+        case PRIM_K_PASS:
+            k_pass_state_change(aps);
+            break;
+        default:
+            assert(0);
+            break;
 	}
-    if (aps->update_hw) {
-        aps->update_hw(aps->ring_id, aps->slot, aps->port, aps->node_state);
+    if (aps->output_update_hw) {
+        aps->output_update_hw(aps->ring_id, aps->slot, aps->port, aps->node_state);
     }
-    if (aps->set_kbyte) {
-        aps->set_kbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
-        aps->set_kbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
+    if (aps->output_set_kbyte) {
+        aps->output_set_kbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
+        aps->output_set_kbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
     }
-    if (aps->start_wtr) {
-        aps->start_wtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
+    if (aps->output_start_wtr) {
+        aps->output_start_wtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
     }
 	//ring_print(aps->node_id, "exit prim, state = %s\n", prim_state_name(aps->cur_prim_state));
 }
