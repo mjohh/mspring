@@ -1,12 +1,10 @@
 #ifndef mspring_ring_aps_controller_h
 #define mspring_ring_aps_controller_h
-
 #ifdef __cplusplus
 extern "C" {
 #endif
     
-struct aps_controller
-{
+struct aps_controller {
     // input
     struct k1k2 drv_kbytes[NUM_SIDES];
     enum dq dq[NUM_SIDES];
@@ -14,19 +12,16 @@ struct aps_controller
     enum side ext_side;
     int is_ne_ready; // before ready it src default kbytes.
     int is_wtr_timeout; // when wtr time out or extcmd release it 's TRUE.
-    
     // output
     struct k1k2 cur_kbytes[NUM_SIDES];
     int is_wtr_start; // when wtr timer start, it's TRUE.
     enum node_state node_state;
-    
     // status
     enum side tail_side; // for wtr proc
     enum side short_side;
     enum primary_state_id cur_prim_state;
     enum switch_state_id cur_sw_state;
     enum end_state_id cur_end_state;
-    
     // cfg
     unsigned short ring_map[MAX_NODES_IN_RING];
     int nodes_num;
@@ -36,13 +31,7 @@ struct aps_controller
     int slot[NUM_SIDES];
     int port[NUM_SIDES];
     int wtr_time; // second
-    
-    // output hook
-    int (*output_set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2);
-    int (*output_update_hw)(int ringid, int cardid[], int portid[], enum node_state state);
-    int (*output_start_wtr)(int ringid, int enable, int sec);
 };
-
 
 #define CURRENT_KBYTES(side)         aps->cur_kbytes[side]
 #define CURRENT_KBYTES_K1(side)      aps->cur_kbytes[side].k1
@@ -84,11 +73,7 @@ do{\
 
 #define IS_NE_READY                 aps->is_ne_ready
 
-
-int aps_controller_init(struct aps_controller* aps,
-                        int (*output_set_kbyte)(int ringid, int cardid, int portid, struct k1k2 * k1k2),
-                        int (*output_update_hw)(int ringid, int cardid[], int portid[], enum node_state state),
-                        int (*output_start_wtr)(int ringid, int enable, int sec));
+int aps_controller_init(struct aps_controller* aps);
 void aps_controller_fini(struct aps_controller* aps);
 void aps_controller_run(struct aps_controller* aps);
 
@@ -97,8 +82,22 @@ void aps_input_dq(struct aps_controller * aps, enum side side, enum dq dq);
 void aps_input_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cmd ext_cmd);
 void aps_input_ne_ready_flag(struct aps_controller * aps, int is_ne_ready);
 void aps_input_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout);
+    
+void aps_output(struct aps_controller* aps,
+               int (*output_set_kbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
+               int (*output_update_hw)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
+               int (*output_start_wtr)(int ringid, int enable, int sec));
+    
+int aps_cfg(struct aps_controller * aps,
+            unsigned short ring_map[MAX_NODES_IN_RING],
+            int nodes_num,
+            int node_id,
+            int ring_id,
+            int slot[NUM_SIDES],
+            int port[NUM_SIDES],
+            int wtr_time);
 
 #ifdef __cplusplus
     }
 #endif
-#endif
+#endif //mspring_ring_aps_controller_h
