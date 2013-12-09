@@ -1,6 +1,5 @@
 #ifndef ring_state_sw_upgrd_h
 #define ring_state_sw_upgrd_h
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,5 +12,4 @@ void exit_cur_sw_state(struct aps_controller* aps);
 #ifdef __cplusplus
 }
 #endif
-
 #endif //ring_state_sw_upgrd_h

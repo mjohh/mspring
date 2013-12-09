@@ -14,21 +14,17 @@
 #include "ring_rule_s.h"
 #include "ring_state_sw_upgrd.h"
 #include "ring_dbg.h"
-
 #include <assert.h>
 
-static void set_state(struct aps_controller *aps, enum switch_state_id next_state)
-{
+static void set_state(struct aps_controller *aps, enum switch_state_id next_state) {
     assert(aps && next_state >= SW_STARTUP && next_state < SW_STATE_MAX);
     aps->cur_sw_state = next_state;
 }
 
-static void to_new_state(struct aps_controller *aps)
-{
+static void to_new_state(struct aps_controller *aps) {
     enum brq_code brq;
     enum side short_side;
     get_reason_brq_and_short_side(aps, &brq, &short_side);;
-    
     switch (brq) {
         case EXER:
             set_state(aps, SW_EXER);
@@ -61,11 +57,8 @@ static void to_new_state(struct aps_controller *aps)
     }
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
-
-char *sw_state_name(int state)
-{
+char *sw_state_name(int state) {
     switch (state) {
         case SW_STARTUP:
             return "SW_STARTUP";
@@ -86,10 +79,8 @@ char *sw_state_name(int state)
     }
 }
 
-void sw_state_run(struct aps_controller *aps)
-{
+void sw_state_run(struct aps_controller *aps) {
     assert(aps);
-    
     switch (aps->cur_sw_state) {
         case SW_STARTUP:
         case SW_EXER:
@@ -107,19 +98,16 @@ void sw_state_run(struct aps_controller *aps)
     //ring_print(aps->node_id, "  exit sw, state = %sn", sw_state_name(aps->cur_sw_state));
 }
 
-void sw_state_exit(struct aps_controller *aps)
-{
+void sw_state_exit(struct aps_controller *aps) {
     aps->cur_sw_state = SW_STARTUP;
 }
 
-void sw_state_init(struct aps_controller *aps)
-{
+void sw_state_init(struct aps_controller *aps) {
     assert(aps);
     aps->cur_sw_state = SW_STARTUP;
     ring_print(aps->node_id, "init sw, state = %sn", sw_state_name(aps->cur_sw_state));
 }
 
-void sw_state_fini(struct aps_controller *aps)
-{
+void sw_state_fini(struct aps_controller *aps) {
     // do nothing
 }

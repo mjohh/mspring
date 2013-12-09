@@ -1,10 +1,8 @@
 #ifndef ring_state_h
 #define ring_state_h
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 enum end_state_id
 {
@@ -43,5 +41,4 @@ char* end_state_name(int state);
 #ifdef __cplusplus
 }
 #endif
-
 #endif //ring_state_h

@@ -6,13 +6,11 @@
 #include "ring_aps_controller.h"
 #include "ring_funcs.h"
 #include "unit_test_if.h"
-
 #include <stdio.h>
 #include <assert.h>
 
 // rule P#2 keep in passthru
-void passthru_node_recv_same_pri_brq_to_it(struct aps_controller *aps)
-{
+void passthru_node_recv_same_pri_brq_to_it(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // the brq is illegal but could cause passthru
@@ -28,11 +26,9 @@ void passthru_node_recv_same_pri_brq_to_it(struct aps_controller *aps)
 }
 
 static struct aps_controller s_controller;
-void passthru_test_run(void)
-{
+void passthru_test_run(void) {
     unit_test_startup(&s_controller);
     passthru_node_recv_same_pri_brq_to_it(&s_controller);
     unit_test_teardown(&s_controller);
-    
     printf("npassthru_test_run() okkkk!");
 }

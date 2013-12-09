@@ -9,14 +9,13 @@
 #include "ring_state_sd.h"
 #include "ring_rule_s.h"
 #include "ring_state.h"
-//// here impl switch upgrade,degrade and occupy.
 
+//// here impl switch upgrade,degrade and occupy.
 // get brq caused switch
 // if ret side is NUM_SIDES means coexist short brq and local dq.coulde be:
 //  1)local brq-local brq
 //  2)short brq-short brq
-void get_reason_brq_and_short_side(struct aps_controller *aps, enum brq_code *brq, enum side *side)
-{
+void get_reason_brq_and_short_side(struct aps_controller *aps, enum brq_code *brq, enum side *side) {
     if (is_coexist_local_brq(aps)) {
         // for coexist brq, choose WEST brq as switch reason.
         *brq = get_local_brq(aps, WEST);
@@ -49,32 +48,24 @@ void get_reason_brq_and_short_side(struct aps_controller *aps, enum brq_code *br
     }
 }
 
-
-void exit_cur_sw_state(struct aps_controller *aps)
-{
+void exit_cur_sw_state(struct aps_controller *aps) {
     end_state_exit(aps);
     sw_state_exit(aps);
 }
 
-void drop_switch_if_occupy(struct aps_controller *aps)
-{
+void drop_switch_if_occupy(struct aps_controller *aps) {
     enum brq_code new_brq;
     enum side new_side;
     enum side cur_side;
-    
     get_reason_brq_and_short_side(aps, &new_brq, &new_side);
     cur_side = aps->short_side;
     aps->short_side = new_side;
-    
-    if (SW_STARTUP == aps->cur_sw_state) {
-        // at switch init state, need do nothing.
-        return;
-    }
+    if (SW_STARTUP == aps->cur_sw_state)
+        return;// at switch init state, need do nothing.
     if (new_side == cur_side) {
         ///use cur_end_state directly, do nothing
-    } else			// occupy
-    {
-        // drop cur switch state firstly, and new state will start from begining.
+    } else {
+        // occupy, drop cur switch state firstly, and new state will start from begining.
         exit_cur_sw_state(aps);
     }
 }

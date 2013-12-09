@@ -1,6 +1,9 @@
-#ifndef __UNIT_TEST_H__
-#define __UNIT_TEST_H__
-
+#ifndef ring_unit_test_h
+#define ring_unit_test_h
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
 #define UPDATE_RX_KBYTES(side, brq, dest, src, pth, stat)\
 do {\
     aps->drv_kbytes[side].k1.brcode = brq;\
@@ -33,4 +36,7 @@ void assert_tx_kbytes(const struct aps_controller *aps, int side, int brq, int d
 void unit_test_startup(struct aps_controller *aps);
 void unit_test_teardown(struct aps_controller *aps);
 
-#endif				//__UNIT_TEST_H__
+#ifdef __cplusplus
+}
+#endif
+#endif //ring_unit_test_h

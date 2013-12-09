@@ -6,7 +6,6 @@
 #include "ring_aps_controller.h"
 #include "ring_funcs.h"
 
-
 extern void switching_state_test_run(void);
 extern void switch_to_switch_test_run(void);
 extern void passthru_test_run(void);
@@ -14,8 +13,7 @@ extern void node_start_up_test_run(void);
 extern void node_start_up_neib_test_run(void);
 extern void swtich_idle_transition_test_run(void);
 
-void unit_test(void)
-{
+void unit_test(void) {
     node_start_up_test_run();
     node_start_up_neib_test_run();
     switching_state_test_run();

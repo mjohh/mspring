@@ -5,13 +5,11 @@
 #include "ring_state_primary.h"
 #include "ring_aps_controller.h"
 #include "ring_funcs.h"
-
 #include <memory.h>
 #include <assert.h>
 
 //// this file impl rule s-s
-enum brq_code get_highest_brq_on_side(struct aps_controller *aps, enum side side)
-{
+enum brq_code get_highest_brq_on_side(struct aps_controller *aps, enum side side) {
     int i;
     enum brq_code brqs[3];
     enum brq_code hi_brq = NR;
@@ -28,24 +26,22 @@ enum brq_code get_highest_brq_on_side(struct aps_controller *aps, enum side side
     return hi_brq;
 }
 
-enum brq_code get_highest_brq(struct aps_controller *aps)
-{
+enum brq_code get_highest_brq(struct aps_controller *aps) {
     return RMAX(get_highest_brq_on_side(aps, WEST), get_highest_brq_on_side(aps, EAST));
 }
 
-enum brq_code get_local_brq(struct aps_controller *aps, enum side side)
-{
+enum brq_code get_local_brq(struct aps_controller *aps, enum side side) {
     assert(WEST == EXT_CMD_SIDE || EAST == EXT_CMD_SIDE);
     return EXT_CMD_SIDE == side ? RMAX(get_ext_brq(aps), get_dq_brq(aps, side)) : get_dq_brq(aps, side);
 }
 
-int is_coexist_brq(enum brq_code wbrq, enum brq_code ebrq)
-{
-    return wbrq == ebrq || (wbrq == LOP && ebrq == LOP) || ((wbrq == SF || wbrq == FS) && (ebrq == SF || ebrq == FS)) || ((wbrq == SD || wbrq == MS || wbrq == EXER) && (ebrq == SD || ebrq == MS || ebrq == EXER));
+int is_coexist_brq(enum brq_code wbrq, enum brq_code ebrq) {
+    return wbrq == ebrq || (wbrq == LOP && ebrq == LOP) ||
+    ((wbrq == SF || wbrq == FS) && (ebrq == SF || ebrq == FS)) ||
+    ((wbrq == SD || wbrq == MS || wbrq == EXER) && (ebrq == SD || ebrq == MS || ebrq == EXER));
 }
 
-enum side get_side_by_slot_port(struct aps_controller *aps, int slot, int port)
-{
+enum side get_side_by_slot_port(struct aps_controller *aps, int slot, int port) {
     assert(aps);
     if (aps->slot[WEST] == slot && aps->port[WEST] == port) {
         return WEST;
@@ -58,45 +54,36 @@ enum side get_side_by_slot_port(struct aps_controller *aps, int slot, int port)
 }
 
 // TODO :
-int is_leagal_kbytes(struct aps_controller *aps, struct k1k2 *k1k2)
-{
-    if (!is_default_kbytes(k1k2) && k1k2->k1.brcode != NR) {
+int is_leagal_kbytes(struct aps_controller *aps, struct k1k2 *k1k2) {
+    if (!is_default_kbytes(k1k2) && k1k2->k1.brcode != NR)
         if (k1k2->k2.path == SHORT_PATH && k1k2->k1.dest_node != aps->node_id)
             return 0;
-    }
     return 1;
 }
 
-void update_node_state(struct aps_controller *aps, enum node_state state)
-{
+void update_node_state(struct aps_controller *aps, enum node_state state) {
     assert(aps && IDLE <= state && state < ILLEGAL_STATE);
     aps->node_state = state;
 }
 
-enum brq_code get_kbyte_brq(struct aps_controller *aps, enum side side)
-{
-    if (is_cut(aps, side)) {
+enum brq_code get_kbyte_brq(struct aps_controller *aps, enum side side) {
+    if (is_cut(aps, side))
         return NR;
-    }
     return DRV_KBYTES_BRCODE(side);
 }
 
-enum brq_code get_dq_brq(struct aps_controller *aps, enum side side)
-{
-    if (DQ_SF == DRV_DQ(side) || is_cut(aps, side)) {
+enum brq_code get_dq_brq(struct aps_controller *aps, enum side side) {
+    if (DQ_SF == DRV_DQ(side) || is_cut(aps, side))
         return SF;
-    }
-    if (DQ_SD == DRV_DQ(side)) {
+    if (DQ_SD == DRV_DQ(side))
         return SD;
-    }
     return NR;
 }
 
 // attention:
 // for ext cmd, here just handle EX_LOP.
 // for EX_LOW, it do not send brq code.
-enum brq_code get_ext_brq(struct aps_controller *aps)
-{
+enum brq_code get_ext_brq(struct aps_controller *aps) {
     switch (EXT_CMD_CMD) {
         case EX_LOP:
             return LOP;
@@ -115,8 +102,7 @@ enum brq_code get_ext_brq(struct aps_controller *aps)
     }
 }
 
-enum brq_code get_highest_brq_for_me(struct aps_controller *aps)
-{
+enum brq_code get_highest_brq_for_me(struct aps_controller *aps) {
     int i;
     enum brq_code brqs[NUM_BRQ_SOURCES];
     enum brq_code hi_brq = NR;
@@ -135,64 +121,52 @@ enum brq_code get_highest_brq_for_me(struct aps_controller *aps)
     return hi_brq;
 }
 
-enum brq_code get_kbyte_brq_for_me(struct aps_controller *aps, enum side side)
-{
-    if (!is_kbyte_for_me(aps, side)) {
+enum brq_code get_kbyte_brq_for_me(struct aps_controller *aps, enum side side) {
+    if (!is_kbyte_for_me(aps, side))
         return NR;
-    }
-    if (is_cut(aps, side)) {
+    if (is_cut(aps, side))
         return NR;
-    }
     return DRV_KBYTES_BRCODE(side);
 }
 
-int is_kbyte_for_me(struct aps_controller *aps, enum side side)
-{
+int is_kbyte_for_me(struct aps_controller *aps, enum side side) {
     return (MY_NODE_ID == DRV_KBYTES_DEST(side));
 }
 
-enum brq_code get_kbyte_brq_for_other(struct aps_controller *aps, enum side side)
-{
-    if (is_kbyte_for_me(aps, side)) {
+enum brq_code get_kbyte_brq_for_other(struct aps_controller *aps, enum side side) {
+    if (is_kbyte_for_me(aps, side))
         return NR;
-    }
     return get_kbyte_brq(aps, side);
 }
 
-enum brq_code get_highest_brq_for_other(struct aps_controller *aps)
-{
+enum brq_code get_highest_brq_for_other(struct aps_controller *aps) {
     enum brq_code west_brq = NR;
     enum brq_code east_brq = NR;
     
     /* if both k bytes are addressed to me, then brq type for other is nill */
-    if (is_kbyte_for_me(aps, WEST) && is_kbyte_for_me(aps, EAST)) {
+    if (is_kbyte_for_me(aps, WEST) && is_kbyte_for_me(aps, EAST))
         return NR;
-    }
-    if (!is_kbyte_for_me(aps, WEST)) {
+    if (!is_kbyte_for_me(aps, WEST))
         west_brq = get_kbyte_brq(aps, WEST);
-    }
-    if (!is_kbyte_for_me(aps, EAST)) {
+    if (!is_kbyte_for_me(aps, EAST))
         east_brq = get_kbyte_brq(aps, EAST);
-    }
     if (west_brq > east_brq)
         return west_brq;
     return east_brq;
 }
 
-int is_default_kbytes(struct k1k2 *kbyte)
-{
+int is_default_kbytes(struct k1k2 *kbyte) {
     char k1 = DEFAULT_K1BYTE;
     char k2 = DEFAULT_K2BYTE;
-    return (0 == memcmp(&kbyte->k1, &k1, sizeof(k1)) && 0 == memcmp(&kbyte->k2, &k2, sizeof(k2)));
+    return (0 == memcmp(&kbyte->k1, &k1, sizeof(k1)) &&
+            0 == memcmp(&kbyte->k2, &k2, sizeof(k2)));
 }
 
-int is_cut(struct aps_controller *aps, enum side side)
-{
+int is_cut(struct aps_controller *aps, enum side side) {
     return !are_kbytes_readable(aps, side);
 }
 
-int are_kbytes_readable(struct aps_controller *aps, enum side side)
-{
+int are_kbytes_readable(struct aps_controller *aps, enum side side) {
     /* before deciding check status of kbytes, maybe not yet available */
     if (DQ_SF == DRV_DQ(side))
         return 0;
@@ -205,8 +179,7 @@ int are_kbytes_readable(struct aps_controller *aps, enum side side)
     return 1;
 }
 
-enum brq_code get_brq_for_me(struct aps_controller *aps, enum side side)
-{
+enum brq_code get_brq_for_me(struct aps_controller *aps, enum side side) {
     int i;
     enum brq_code brqs[3];
     enum brq_code hi_brq = NR;
@@ -215,53 +188,38 @@ enum brq_code get_brq_for_me(struct aps_controller *aps, enum side side)
     brqs[1] = side == EXT_CMD_SIDE ? get_ext_brq(aps) : NR;
     brqs[2] = get_kbyte_brq_for_me(aps, side);
     
-    for (i = 0; i < 3; i++) {
-        if (brqs[i] > hi_brq) {
+    for (i = 0; i < 3; i++)
+        if (brqs[i] > hi_brq)
             hi_brq = brqs[i];
-        }
-    }
     return hi_brq;
 }
 
-enum brq_code get_brq_for_other(struct aps_controller *aps, enum side side)
-{
+enum brq_code get_brq_for_other(struct aps_controller *aps, enum side side) {
     /* if both k bytes are addressed to me, then brq type for other is nill */
-    if (is_kbyte_for_me(aps, side)) {
+    if (is_kbyte_for_me(aps, side))
         return NR;
-    }
     return get_kbyte_brq(aps, side);
 }
 
-enum brq_code get_short_brq(struct aps_controller *aps, enum side side)
-{
+enum brq_code get_short_brq(struct aps_controller *aps, enum side side) {
     enum brq_code brq = get_kbyte_brq_for_me(aps, side);
-    
-    if (LONG_PATH == DRV_KBYTES_PATH(side)) {
+    if (LONG_PATH == DRV_KBYTES_PATH(side))
         return NR;
-    }
-    
-    if (NR == brq || RR == brq) {
+    if (NR == brq || RR == brq)
         return NR;
-    }
     return brq;
 }
 
-enum brq_code get_long_brq(struct aps_controller *aps, enum side side)
-{
+enum brq_code get_long_brq(struct aps_controller *aps, enum side side) {
     enum brq_code brq = get_kbyte_brq(aps, side);
-    
-    if (SHORT_PATH == DRV_KBYTES_PATH(side)) {
+    if (SHORT_PATH == DRV_KBYTES_PATH(side))
         return NR;
-    }
-    
-    if (NR == brq || RR == brq) {
+    if (NR == brq || RR == brq)
         return NR;
-    }
     return brq;
 }
 
-char *get_name_of_brq(enum brq_code brq)
-{
+char *get_name_of_brq(enum brq_code brq) {
     switch (brq) {
         case NR:
             return "NR";
@@ -300,8 +258,7 @@ char *get_name_of_brq(enum brq_code brq)
     }
 }
 
-char *get_name_of_status(enum status stat)
-{
+char *get_name_of_status(enum status stat) {
     switch (stat) {
         case IDLE_STATUS:
             return "IDLE";
@@ -324,8 +281,7 @@ char *get_name_of_status(enum status stat)
     }
 }
 
-char *dq_name(enum dq dq)
-{
+char *dq_name(enum dq dq) {
     switch (dq) {
         case DQ_CLEAR:
             return "DQ_CLEAR";
@@ -342,22 +298,17 @@ char *dq_name(enum dq dq)
     }
 }
 
-int is_valid_long_reply_for_brq(struct aps_controller *aps, enum brq_code brq, enum side reply_side)
-{
+int is_valid_long_reply_for_brq(struct aps_controller *aps, enum brq_code brq, enum side reply_side) {
     if (LONG_PATH == DRV_KBYTES_PATH(reply_side)) {
-        if (is_coexist_brq(DRV_KBYTES_BRCODE(reply_side), brq)) {
+        if (is_coexist_brq(DRV_KBYTES_BRCODE(reply_side), brq))
             return 1;
-        }
-        
-        if (MY_NODE_ID == DRV_KBYTES_DEST(reply_side)) {
+        if (MY_NODE_ID == DRV_KBYTES_DEST(reply_side))
             return 1;
-        }
     }
     return 0;
 }
 
-int is_tail_end(struct aps_controller *aps)
-{
+int is_tail_end(struct aps_controller *aps) {
     enum brq_code short_brq = get_kbyte_brq_for_me(aps, aps->short_side);
     enum brq_code local_brq = get_local_brq(aps, aps->short_side);
     enum brq_code hi_brq = get_highest_brq(aps);
@@ -365,10 +316,10 @@ int is_tail_end(struct aps_controller *aps)
 }
 
 // attention: one short nr brq my not to the node, see tail-end wtr timeout process.
-int is_rcv_nr_idle_both_sides(struct aps_controller *aps)
-{
+int is_rcv_nr_idle_both_sides(struct aps_controller *aps) {
     enum brq_code w_brq = get_kbyte_brq(aps, WEST);
     enum brq_code e_brq = get_kbyte_brq(aps, EAST);
-    
-    return (NR == w_brq && NR == e_brq && SHORT_PATH == DRV_KBYTES_PATH(WEST) && SHORT_PATH == DRV_KBYTES_PATH(EAST));
+    return (NR == w_brq && NR == e_brq &&
+            SHORT_PATH == DRV_KBYTES_PATH(WEST) &&
+            SHORT_PATH == DRV_KBYTES_PATH(EAST));
 }

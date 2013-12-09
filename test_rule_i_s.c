@@ -6,14 +6,11 @@
 #include "ring_aps_controller.h"
 #include "ring_funcs.h"
 #include "unit_test_if.h"
-
 #include <stdio.h>
 //rule I-S#1b from idle to switching
 
-void sd_head_from_idle_to_switching(struct aps_controller *aps)
-{
+void sd_head_from_idle_to_switching(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
-    
     // recv short sd brq, keep idle
     UPDATE_RX_KBYTES(EAST, SD, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
     prim_state_run(aps);
@@ -36,8 +33,7 @@ void sd_head_from_idle_to_switching(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sd_tail_from_idle_to_switching(struct aps_controller *aps)
-{
+void sd_tail_from_idle_to_switching(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     UPDATE_DQ(WEST, DQ_SD);
     prim_state_run(aps);
@@ -61,10 +57,8 @@ void sd_tail_from_idle_to_switching(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sf_head_from_idle_to_switching(struct aps_controller *aps)
-{
+void sf_head_from_idle_to_switching(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
-    
     // recv short sd brq, keep idle
     UPDATE_RX_KBYTES(EAST, SF, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
     prim_state_run(aps);
@@ -81,10 +75,8 @@ void sf_head_from_idle_to_switching(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sf_tail_from_idle_to_switching(struct aps_controller *aps)
-{
+void sf_tail_from_idle_to_switching(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
-    
     // recv short sd brq, keep idle
     UPDATE_DQ(WEST, DQ_SF);
     prim_state_run(aps);
@@ -102,10 +94,8 @@ void sf_tail_from_idle_to_switching(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sf_head_dq_clear_wtr_timeout(struct aps_controller *aps)
-{
+void sf_head_dq_clear_wtr_timeout(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
-    
     // recv short sd brq, keep idle
     UPDATE_RX_KBYTES(EAST, SF, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
     prim_state_run(aps);
@@ -135,10 +125,8 @@ void sf_head_dq_clear_wtr_timeout(struct aps_controller *aps)
     assert_tx_kbytes(aps, EAST, NR, EAST_NODE_ID, MY_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sf_tail_dq_clear_wtr_timeout(struct aps_controller *aps)
-{
+void sf_tail_dq_clear_wtr_timeout(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
-    
     // recv short sd brq, keep idle
     UPDATE_DQ(WEST, DQ_SF);
     prim_state_run(aps);
@@ -180,8 +168,7 @@ void sf_tail_dq_clear_wtr_timeout(struct aps_controller *aps)
 // in figrue I.5, use isolate node rule, the node will take no action also. so, I-S#5 is unnecessary?
 
 // Rule I-S#6 a switching node recv long brq sending by itself from both sides, change to idle state.
-void swtiching_node_rx_brqs_it_tx_from_both_sides(struct aps_controller *aps)
-{
+void swtiching_node_rx_brqs_it_tx_from_both_sides(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     prim_state_run(aps);
     
@@ -204,10 +191,8 @@ void swtiching_node_rx_brqs_it_tx_from_both_sides(struct aps_controller *aps)
 }
 
 // Rule I-S#7 two direction RR recovery
-void switching_node_rx_and_tx_rr_over_same_span(struct aps_controller *aps)
-{
+void switching_node_rx_and_tx_rr_over_same_span(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
-    
     // recv short sd brq, keep idle
     UPDATE_RX_KBYTES(EAST, SD, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
     prim_state_run(aps);
@@ -235,8 +220,7 @@ void switching_node_rx_and_tx_rr_over_same_span(struct aps_controller *aps)
 
 
 static struct aps_controller s_controller;
-void swtich_idle_transition_test_run(void)
-{
+void swtich_idle_transition_test_run(void) {
     unit_test_startup(&s_controller);
     sd_head_from_idle_to_switching(&s_controller);
     unit_test_teardown(&s_controller);

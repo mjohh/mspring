@@ -11,8 +11,7 @@
 // attention: sf occur when sd br status, it should upgrade to sf br status
 // ie. low middle status could be upgraded to higher middle status
 // rule S-S#1c
-void sd_tail_upgrade_to_sf_tail(struct aps_controller *aps)
-{
+void sd_tail_upgrade_to_sf_tail(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     UPDATE_DQ(WEST, DQ_SD);
     prim_state_run(aps);
@@ -43,8 +42,7 @@ void sd_tail_upgrade_to_sf_tail(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sd_head_upgrade_to_sf_tail(struct aps_controller *aps)
-{
+void sd_head_upgrade_to_sf_tail(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -79,8 +77,7 @@ void sd_head_upgrade_to_sf_tail(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sd_tail_upgrade_to_sf_head(struct aps_controller *aps)
-{
+void sd_tail_upgrade_to_sf_head(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     UPDATE_DQ(WEST, DQ_SD);
     prim_state_run(aps);
@@ -111,8 +108,7 @@ void sd_tail_upgrade_to_sf_head(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sd_head_upgrade_to_sf_head(struct aps_controller *aps)
-{
+void sd_head_upgrade_to_sf_head(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -145,8 +141,7 @@ void sd_head_upgrade_to_sf_head(struct aps_controller *aps)
 }
 
 // rule S-S#2f
-void sd_tail_preemption_by_neib_sf_tail(struct aps_controller *aps)
-{
+void sd_tail_preemption_by_neib_sf_tail(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     UPDATE_DQ(WEST, DQ_SD);
     prim_state_run(aps);
@@ -178,8 +173,7 @@ void sd_tail_preemption_by_neib_sf_tail(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sd_tail_preemption_by_neib_sf_head(struct aps_controller *aps)
-{
+void sd_tail_preemption_by_neib_sf_head(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     UPDATE_DQ(WEST, DQ_SD);
     prim_state_run(aps);
@@ -210,8 +204,7 @@ void sd_tail_preemption_by_neib_sf_head(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void sd_head_preemption_by_neib_sf_tail(struct aps_controller *aps)
-{
+void sd_head_preemption_by_neib_sf_tail(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -245,8 +238,7 @@ void sd_head_preemption_by_neib_sf_tail(struct aps_controller *aps)
     
 }
 
-void sd_head_preemption_by_neib_sf_head(struct aps_controller *aps)
-{
+void sd_head_preemption_by_neib_sf_head(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -279,8 +271,7 @@ void sd_head_preemption_by_neib_sf_head(struct aps_controller *aps)
 }
 
 // rule S-S#3a
-void tail_wtr_preemption_by_head_sf(struct aps_controller *aps)
-{
+void tail_wtr_preemption_by_head_sf(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -312,8 +303,7 @@ void tail_wtr_preemption_by_head_sf(struct aps_controller *aps)
     UPDATE_RX_KBYTES(EAST, NR, MY_NODE_ID, EAST_NODE_ID, SHORT_PATH, IDLE_STATUS);
 }
 
-void tail_wtr_preemption_by_neib_head_sf(struct aps_controller *aps)
-{
+void tail_wtr_preemption_by_neib_head_sf(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -346,8 +336,7 @@ void tail_wtr_preemption_by_neib_head_sf(struct aps_controller *aps)
 }
 
 
-void head_response_to_brq_wtr(struct aps_controller *aps)
-{
+void head_response_to_brq_wtr(struct aps_controller *aps) {
     aps->is_ne_ready = 1;
     
     // recv short sd brq, keep idle
@@ -383,13 +372,11 @@ void head_response_to_brq_wtr(struct aps_controller *aps)
 }
 
 // rule S-S#5
-void switching_node_rx_brqs_from_neibs_both_sides(struct aps_controller *aps)
-{
+void switching_node_rx_brqs_from_neibs_both_sides(struct aps_controller *aps) {
 }
 
 static struct aps_controller s_controller;
-void switch_to_switch_test_run(void)
-{
+void switch_to_switch_test_run(void) {
     unit_test_startup(&s_controller);
     sd_tail_upgrade_to_sf_tail(&s_controller);
     unit_test_teardown(&s_controller);

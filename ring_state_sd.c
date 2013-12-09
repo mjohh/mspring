@@ -8,11 +8,9 @@
 #include "ring_funcs.h"
 #include "ring_state_sd.h"
 #include "ring_dbg.h"
-
 #include <assert.h>
 
-void sd_start_up_change(struct aps_controller *aps)
-{
+void sd_start_up_change(struct aps_controller *aps) {
     if (is_coexist_sd_ms_exer(aps)) {
         to_start_up_for_coexist(aps);
     } else {
@@ -20,8 +18,7 @@ void sd_start_up_change(struct aps_controller *aps)
     }
 }
 
-void sd_idle_and_waiting_change(struct aps_controller *aps)
-{
+void sd_idle_and_waiting_change(struct aps_controller *aps) {
     if (is_coexist_sd_ms_exer(aps)) {
         to_start_up_for_coexist(aps);
     } else {
@@ -29,8 +26,7 @@ void sd_idle_and_waiting_change(struct aps_controller *aps)
     }
 }
 
-void sd_br_and_waiting_change(struct aps_controller *aps)
-{
+void sd_br_and_waiting_change(struct aps_controller *aps) {
     if (is_coexist_sd_ms_exer(aps)) {
         to_start_up_for_coexist(aps);
     } else {
@@ -38,8 +34,7 @@ void sd_br_and_waiting_change(struct aps_controller *aps)
     }
 }
 
-void sd_brsw_change(struct aps_controller *aps)
-{
+void sd_brsw_change(struct aps_controller *aps) {
     if (is_coexist_sd_ms_exer(aps)) {
         to_start_up_for_coexist(aps);
     } else {
@@ -47,13 +42,11 @@ void sd_brsw_change(struct aps_controller *aps)
     }
 }
 
-void sd_state_exit(struct aps_controller *aps)
-{
+void sd_state_exit(struct aps_controller *aps) {
     aps->cur_end_state = END_START_UP;
 }
 
-void sd_state_run(struct aps_controller *aps)
-{
+void sd_state_run(struct aps_controller *aps) {
     assert(aps);
     switch (aps->cur_end_state) {
         case END_START_UP:

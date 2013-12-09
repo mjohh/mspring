@@ -8,38 +8,30 @@
 #include "ring_funcs.h"
 #include "ring_state_fs.h"
 #include "ring_dbg.h"
-
 #include <assert.h>
 
-void fs_start_up_change(struct aps_controller *aps)
-{
+void fs_start_up_change(struct aps_controller *aps) {
     start_up_change(aps);
 }
 
-void fs_idle_and_waiting_change(struct aps_controller *aps)
-{
+void fs_idle_and_waiting_change(struct aps_controller *aps) {
     idle_and_waiting_change(aps);
 }
 
-void fs_br_and_waiting_change(struct aps_controller *aps)
-{
+void fs_br_and_waiting_change(struct aps_controller *aps) {
     br_and_waiting_change(aps);
 }
 
-void fs_brsw_change(struct aps_controller *aps)
-{
+void fs_brsw_change(struct aps_controller *aps) {
     brsw_change(aps);
 }
 
-void fs_state_exit(struct aps_controller *aps)
-{
+void fs_state_exit(struct aps_controller *aps) {
     aps->cur_end_state = END_START_UP;
 }
 
-void fs_state_run(struct aps_controller *aps)
-{
+void fs_state_run(struct aps_controller *aps) {
     assert(aps);
-    
     switch (aps->cur_end_state) {
         case END_START_UP:
             fs_start_up_change(aps);

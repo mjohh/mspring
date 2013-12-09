@@ -10,17 +10,14 @@
 #include "ring_rule_s.h"
 #include "ring_state_sw_upgrd.h"
 #include "ring_state.h"
-
 #include "ring_dbg.h"
-
 #include <assert.h>
-void lp_state_exit(struct aps_controller *aps)
-{
+
+void lp_state_exit(struct aps_controller *aps) {
     aps->cur_end_state = END_START_UP;
 }
 
-void lp_state_run(struct aps_controller *aps)
-{
+void lp_state_run(struct aps_controller *aps) {
     if (is_isolated_node(aps)) {
         to_start_up(aps);
     } else if (is_tail_end(aps)) {

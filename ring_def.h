@@ -1,18 +1,16 @@
 #ifndef ring_def_h
 #define ring_def_h
-
 #ifdef __cplusplus
 extern "C" {
 #endif
     
 enum side {
-    WEST,
+    WEST = 0,
     EAST,
     UNDEFINED_SIDE,
     NUM_SIDES = UNDEFINED_SIDE
 };
     
-
 enum dq {
     DQ_CLEAR = 0,
     DQ_SD = 1,
@@ -20,37 +18,31 @@ enum dq {
     DQ_K1K2_INCONSISTENCY = 3,
     NUM_DQ_CODES = 4
 };
-
-
+    
 struct k1 {
     unsigned int brcode:4;
     unsigned int dest_node:4;
 };
-
-
+    
 struct k2 {
     unsigned int src_node:4;
     unsigned int path:1;
     unsigned int status:3;
 };
 
-
 struct k1k2 {
     struct k1 k1;
     struct k2 k2;
 };
 
-
 #define INVALID_KBYTE     0xffff
 #define DEFAULT_K1BYTE    0x00
 #define DEFAULT_K2BYTE    0x00
 #define MAX_NODES_IN_RING 16
-#define ILLEGAL_NODE_ID    0xffff
-    
-#define MIN_NODE_ID 0
-#define MAX_NODE_ID 15
-    
-#define NUM_BRQ_SOURCES 5
+#define ILLEGAL_NODE_ID   0xffff
+#define MIN_NODE_ID       0
+#define MAX_NODE_ID       15
+#define NUM_BRQ_SOURCES   5
 /*
  bridge request code
  */
@@ -98,7 +90,6 @@ enum status {
     NUM_STATUSES = 8
 };
 
-
 enum node_state {
     IDLE,
     PASS,
@@ -127,4 +118,4 @@ enum ext_cmd {
 #ifdef __cplusplus
 }
 #endif
-#endif				//ring_def_h
+#endif //ring_def_h

@@ -7,8 +7,7 @@
 #include "ring_funcs.h"
 #include "unit_test_if.h"
 
-void tx_default_kbytes_before_ne_ready(struct aps_controller * aps)
-{
+void tx_default_kbytes_before_ne_ready(struct aps_controller * aps) {
 	aps->is_ne_ready = 0;
 	prim_state_run(aps);
 	assert_tx_kbytes(aps, WEST, 0, 0, 0, 0, 0);
