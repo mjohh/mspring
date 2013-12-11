@@ -14,7 +14,7 @@ struct aps_controller {
     int is_wtr_timeout; // when wtr time out or extcmd release it 's TRUE.
     // output
     struct k1k2 cur_kbytes[NUM_SIDES];
-    int is_wtr_start; // when wtr timer start, it's TRUE.
+    int is_wtr_start; // when need start wtr timer, set it TRUE.
     enum node_state node_state;
     // status
     enum side tail_side; // for wtr proc
