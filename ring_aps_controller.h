@@ -73,6 +73,14 @@ do{\
 
 #define IS_NE_READY                 aps->is_ne_ready
 
+#define UPDATE_KBYTES(kbytes, side, brq, dest, src, pth, stat)\
+do{\
+    kbytes[side].k1.brcode = brq;\
+    kbytes[side].k1.dest_node = dest;\
+    kbytes[side].k2.src_node = src;\
+    kbytes[side].k2.path = pth;\
+    kbytes[side].k2.status = stat;\
+}while(0)
 int aps_controller_init(struct aps_controller* aps);
 void aps_controller_fini(struct aps_controller* aps);
 void aps_controller_run(struct aps_controller* aps);
