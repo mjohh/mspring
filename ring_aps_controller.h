@@ -16,6 +16,17 @@ struct aps_controller {
     struct k1k2 cur_kbytes[NUM_SIDES];
     int is_wtr_start; // when need start wtr timer, set it TRUE.
     enum node_state node_state;
+    // input filter
+    struct k1k2 drv_kbytes_filter[NUM_SIDES];
+    enum dq dq_filter[NUM_SIDES];
+    enum ext_cmd ext_cmd_filter;
+    enum side ext_side_filter;
+    int is_ne_ready_filter;
+    int is_wtr_timeout_filter;
+    // output filter
+    struct k1k2 cur_kbytes_filter[NUM_SIDES];
+    int is_wtr_start_filter;
+    enum node_state node_state_filter;
     // status
     enum side tail_side; // for wtr proc
     enum side short_side;
@@ -93,7 +104,8 @@ void aps_input_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout)
     
 void aps_output(struct aps_controller* aps,
                void (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
+               void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES],
+                                enum node_state oldstate, enum node_state curstate),
                void (*startwtr)(int ringid, int enable, int sec));
     
 int aps_cfg(struct aps_controller * aps,

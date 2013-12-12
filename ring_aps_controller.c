@@ -10,20 +10,31 @@
 #include <memory.h>
 
 int aps_init(struct aps_controller *aps) {
-    char k1 = DEFAULT_K1BYTE;
-    char k2 = DEFAULT_K2BYTE;
     assert(aps);
     // init input
-    memcpy(&DRV_KBYTES_K1(WEST), &k1, sizeof(k1));
-    memcpy(&DRV_KBYTES_K2(WEST), &k2, sizeof(k2));
-    memcpy(&DRV_KBYTES_K1(EAST), &k1, sizeof(k1));
-    memcpy(&DRV_KBYTES_K2(EAST), &k2, sizeof(k2));
+    memset(aps->drv_kbytes, 0, sizeof(aps->drv_kbytes));
     aps->dq[WEST] = DQ_CLEAR;
     aps->dq[EAST] = DQ_CLEAR;
     aps->ext_cmd = EX_NONE;
     aps->ext_side = UNDEFINED_SIDE;
     aps->is_ne_ready = 0;
     aps->is_wtr_timeout = 0;
+    // init output
+    memset(aps->cur_kbytes, 0, sizeof(aps->cur_kbytes));
+    aps->is_wtr_start = 0;
+    aps->node_state = IDLE;
+    // init input filter
+    memset(aps->drv_kbytes_filter, 0, sizeof(aps->drv_kbytes_filter));
+    aps->dq_filter[WEST] = DQ_CLEAR;
+    aps->dq_filter[EAST] = DQ_CLEAR;
+    aps->ext_cmd_filter = EX_NONE;
+    aps->ext_side_filter = UNDEFINED_SIDE;
+    aps->is_ne_ready_filter = 0;
+    aps->is_wtr_timeout_filter = 0;
+    // int output filter
+    memset(aps->cur_kbytes_filter, 0, sizeof(aps->cur_kbytes_filter));
+    aps->is_wtr_start_filter = 0;
+    aps->node_state_filter = IDLE;
     // init sm
     end_state_init(aps);
     sw_state_init(aps);
@@ -40,9 +51,41 @@ void aps_fini(struct aps_controller *aps) {
     end_state_fini(aps);
 }
 
+int input_changed(struct aps_controller *aps) {
+    int changed = 0;
+    assert(aps);
+    if (memcmp(aps->drv_kbytes, aps->drv_kbytes_filter, sizeof(aps->drv_kbytes))) {
+        memcpy(aps->drv_kbytes, aps->drv_kbytes_filter, sizeof(aps->drv_kbytes));
+        changed++;
+    }
+    if (memcmp(aps->dq, aps->dq_filter, sizeof(aps->dq))) {
+        memcpy(aps->dq, aps->dq_filter, sizeof(aps->dq));
+        changed++;
+    }
+    if (aps->ext_cmd != aps->ext_cmd_filter) {
+        aps->ext_cmd_filter = aps->ext_cmd;
+        changed++;
+    }
+    if (aps->ext_side != aps->ext_side_filter) {
+        aps->ext_side_filter = aps->ext_side;
+        changed++;
+    }
+    if (aps->is_ne_ready != aps->is_ne_ready_filter) {
+        aps->is_ne_ready_filter = aps->is_ne_ready;
+        changed++;
+    }
+    if (aps->is_wtr_timeout != aps->is_wtr_timeout_filter) {
+        aps->is_wtr_timeout_filter = aps->is_wtr_timeout;
+        changed++;
+    }
+    return changed;
+}
+
 void aps_run(struct aps_controller *aps) {
     assert(aps);
-    prim_state_run(aps);
+    if (input_changed(aps)) {
+        prim_state_run(aps);
+    }
 }
 
 void aps_input_kbyte(struct aps_controller *aps, enum side side, struct k1k2 *k1k2) {
@@ -78,18 +121,32 @@ void aps_input_wtr_timeout_flag(struct aps_controller *aps, int is_wtr_timeout) 
 
 void aps_output(struct aps_controller* aps,
                void (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
+               void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES],
+                                enum node_state oldstate, enum node_state curstate),
                void (*startwtr)(int ringid, int enable, int sec)) {
     assert(aps);
     if (doswitch) {
-        doswitch(aps->ring_id, aps->slot, aps->port, aps->node_state);
+        if (aps->node_state != aps->node_state_filter) {
+            doswitch(aps->ring_id, aps->slot, aps->port, aps->node_state_filter, aps->node_state);
+            aps->node_state_filter = aps->node_state;
+        }
     }
     if (sendkbyte) {
-        sendkbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
-        sendkbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
+        if (memcmp(&aps->cur_kbytes[WEST], &aps->cur_kbytes_filter[WEST], sizeof(aps->cur_kbytes[WEST]))) {
+            sendkbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
+            memcpy(&aps->cur_kbytes[WEST], &aps->cur_kbytes_filter[WEST], sizeof(aps->cur_kbytes[WEST]));
+        }
+        if (memcmp(&aps->cur_kbytes[EAST], &aps->cur_kbytes_filter[EAST], sizeof(aps->cur_kbytes[EAST]))) {
+            sendkbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
+            memcpy(&aps->cur_kbytes[EAST], &aps->cur_kbytes_filter[EAST], sizeof(aps->cur_kbytes[EAST]));
+        }
     }
     if (startwtr) {
-        startwtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
+        if (aps->is_wtr_start != aps->is_wtr_start_filter) {
+            startwtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
+            aps->is_wtr_start_filter = aps->is_wtr_start;
+        }
+        
     }
 }
 
