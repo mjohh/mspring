@@ -77,9 +77,9 @@ void aps_input_wtr_timeout_flag(struct aps_controller *aps, int is_wtr_timeout) 
 }
 
 void aps_output(struct aps_controller* aps,
-               int (*output_set_kbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               int (*output_update_hw)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
-               int (*output_start_wtr)(int ringid, int enable, int sec)) {
+               int (*send_kbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
+               int (*switch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
+               int (*start_wtr)(int ringid, int enable, int sec)) {
     assert(aps);
     if (output_update_hw) {
         output_update_hw(aps->ring_id, aps->slot, aps->port, aps->node_state);
