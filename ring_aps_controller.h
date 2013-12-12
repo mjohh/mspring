@@ -81,9 +81,9 @@ do{\
     kbytes[side].k2.path = pth;\
     kbytes[side].k2.status = stat;\
 }while(0)
-int aps_controller_init(struct aps_controller* aps);
-void aps_controller_fini(struct aps_controller* aps);
-void aps_controller_run(struct aps_controller* aps);
+int aps_init(struct aps_controller* aps);
+void aps_fini(struct aps_controller* aps);
+void aps_run(struct aps_controller* aps);
 
 void aps_input_kbyte(struct aps_controller * aps, enum side side, struct k1k2 * k1k2);
 void aps_input_dq(struct aps_controller * aps, enum side side, enum dq dq);
