@@ -8,7 +8,13 @@ Unit test has been done to verfify the aps state machine
 
 Recommended head file includes:
 
-    
+    #include "ring_def.h"
+    #include "ring_state.h"
+    #include "ring_state_switch.h"
+    #include "ring_state_wtr.h"
+    #include "ring_state_primary.h"
+    #include "ring_aps_controller.h"
+
 Initialize, config a ring:
 
     // define an aps controller obj
@@ -37,5 +43,7 @@ Input aps conditions
     aps_input_ext_cmd(&g_aps, EAST, EX_FS);
     // receive new k bytes on west side
     struc k1k2 kbyte;
-    
-    aps_input_kbyte(&g_aps, )
+    UPDAE_KBYTES(kbyte, WEST, SF, 2, 1, SHORT_PATH, BRSW_STATUS);
+    aps_input_kbyte(&g_aps, &kbyte);
+    // receive wtr expiration event
+    aps_input_wtr_timeout(&g_aps, 1);
