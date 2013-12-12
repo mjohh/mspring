@@ -31,3 +31,11 @@ Input aps conditions
 
     // set ne ready when node start up
     aps_input_ne_ready_flag(&g_aps, 1);
+    // detect sf on west side
+    aps_input_dq(&g_aps, WEST, DQ_SF);
+    // receive force switch to east commond
+    aps_input_ext_cmd(&g_aps, EAST, EX_FS);
+    // receive new k bytes on west side
+    struc k1k2 kbyte;
+    
+    aps_input_kbyte(&g_aps, )
