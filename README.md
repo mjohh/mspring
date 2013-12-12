@@ -33,7 +33,7 @@ Initialize, config a ring:
     ret = aps_cfg(&g_aps, ring_map, nodes_num, node_id, ring_id, slot, port, wtr_time);
     assert(0 == ret);
 
-Input aps conditions
+Input aps conditions:
 
     // node start up
     aps_input_ne_ready_flag(&g_aps, 1);
@@ -47,3 +47,30 @@ Input aps conditions
     aps_input_kbyte(&g_aps, &kbyte);
     // wtr expiration
     aps_input_wtr_timeout(&g_aps, 1);
+    
+Run aps:
+    
+    aps_run(&g_aps);
+    
+Output aps results:
+
+    // define your hook functions
+    void sendkbyte(int ringid, int slot, int port, struct k1k2 * k1k2) {
+        // call drive to send kbytes
+    }
+    void doswitch(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state) {
+        // do bridge or
+        // switch or
+        // bridge and switch or
+        // unbridge or
+        // unswitch or
+        // unbridge and unswtch
+    }
+    void startwtr(int ringid, int enable, int sec) {
+        if (enable) {
+            trigger a timer, which will generate an wtr timeout input in sec seconds
+        } else {
+            stop the timer
+        }
+    }
+
