@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <memory.h>
 
-int aps_controller_init(struct aps_controller *aps) {
+int aps_init(struct aps_controller *aps) {
     char k1 = DEFAULT_K1BYTE;
     char k2 = DEFAULT_K2BYTE;
     assert(aps);
@@ -32,7 +32,7 @@ int aps_controller_init(struct aps_controller *aps) {
     return 0;
 }
 
-void aps_controller_fini(struct aps_controller *aps) {
+void aps_fini(struct aps_controller *aps) {
     assert(aps);
     prim_state_fini(aps);
     wtr_state_fini(aps);
@@ -40,7 +40,7 @@ void aps_controller_fini(struct aps_controller *aps) {
     end_state_fini(aps);
 }
 
-void aps_controller_run(struct aps_controller *aps) {
+void aps_run(struct aps_controller *aps) {
     assert(aps);
     prim_state_run(aps);
 }
