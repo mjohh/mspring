@@ -92,9 +92,9 @@ void aps_input_ne_ready_flag(struct aps_controller * aps, int is_ne_ready);
 void aps_input_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout);
     
 void aps_output(struct aps_controller* aps,
-               int (*output_set_kbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               int (*output_update_hw)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
-               int (*output_start_wtr)(int ringid, int enable, int sec));
+               int (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
+               int (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
+               int (*startwtr)(int ringid, int enable, int sec));
     
 int aps_cfg(struct aps_controller * aps,
             unsigned short ring_map[MAX_NODES_IN_RING],
