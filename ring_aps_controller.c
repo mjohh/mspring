@@ -77,19 +77,19 @@ void aps_input_wtr_timeout_flag(struct aps_controller *aps, int is_wtr_timeout) 
 }
 
 void aps_output(struct aps_controller* aps,
-               int (*send_kbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               int (*switch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
-               int (*start_wtr)(int ringid, int enable, int sec)) {
+               int (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
+               int (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state),
+               int (*startwtr)(int ringid, int enable, int sec)) {
     assert(aps);
-    if (output_update_hw) {
-        output_update_hw(aps->ring_id, aps->slot, aps->port, aps->node_state);
+    if (doswitch) {
+        doswitch(aps->ring_id, aps->slot, aps->port, aps->node_state);
     }
-    if (output_set_kbyte) {
-        output_set_kbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
-        output_set_kbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
+    if (sendkbyte) {
+        sendkbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
+        sendkbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
     }
-    if (output_start_wtr) {
-        output_start_wtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
+    if (startwtr) {
+        startwtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
     }
 }
 
