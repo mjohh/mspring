@@ -55,11 +55,11 @@ int input_changed(struct aps_controller *aps) {
     int changed = 0;
     assert(aps);
     if (memcmp(aps->drv_kbytes, aps->drv_kbytes_filter, sizeof(aps->drv_kbytes))) {
-        memcpy(aps->drv_kbytes, aps->drv_kbytes_filter, sizeof(aps->drv_kbytes));
+        memcpy(aps->drv_kbytes_filter, aps->drv_kbytes, sizeof(aps->drv_kbytes));
         changed++;
     }
     if (memcmp(aps->dq, aps->dq_filter, sizeof(aps->dq))) {
-        memcpy(aps->dq, aps->dq_filter, sizeof(aps->dq));
+        memcpy(aps->dq_filter, aps->dq, sizeof(aps->dq));
         changed++;
     }
     if (aps->ext_cmd != aps->ext_cmd_filter) {
@@ -134,11 +134,11 @@ void aps_output(struct aps_controller* aps,
     if (sendkbyte) {
         if (memcmp(&aps->cur_kbytes[WEST], &aps->cur_kbytes_filter[WEST], sizeof(aps->cur_kbytes[WEST]))) {
             sendkbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
-            memcpy(&aps->cur_kbytes[WEST], &aps->cur_kbytes_filter[WEST], sizeof(aps->cur_kbytes[WEST]));
+            memcpy(&aps->cur_kbytes_filter[WEST], &aps->cur_kbytes[WEST], sizeof(aps->cur_kbytes[WEST]));
         }
         if (memcmp(&aps->cur_kbytes[EAST], &aps->cur_kbytes_filter[EAST], sizeof(aps->cur_kbytes[EAST]))) {
             sendkbyte(aps->ring_id, aps->slot[EAST], aps->port[EAST], &aps->cur_kbytes[EAST]);
-            memcpy(&aps->cur_kbytes[EAST], &aps->cur_kbytes_filter[EAST], sizeof(aps->cur_kbytes[EAST]));
+            memcpy(&aps->cur_kbytes_filter[EAST], &aps->cur_kbytes[EAST], sizeof(aps->cur_kbytes[EAST]));
         }
     }
     if (startwtr) {
