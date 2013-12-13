@@ -74,6 +74,9 @@ Output aps results:
             stop the timer
         }
     }
-    // output
+    // output:
+    // try send kbytes and
+    // try do switch and
+    // try start wtr timer
     aps_output(&g_aps, sendkbyte, doswitch, startwtr);
 
