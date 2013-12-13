@@ -52,14 +52,16 @@ struct aps_controller {
 #define UPDATE_SRC(side,src)         aps->cur_kbytes[side].k2.src_node = src
 #define UPDATE_PATH(side,pth)        aps->cur_kbytes[side].k2.path = pth
 #define UPDATE_STATUS(side,stat)     aps->cur_kbytes[side].k2.status = stat
-#define UPDATE_CURRENT_KBYTES(side, brq, dest, src, pth, stat)\
+#define UPDATE_KBYTES(kbytes, side, brq, dest, src, pth, stat)\
 do{\
-    aps->cur_kbytes[side].k1.brcode = brq;\
-    aps->cur_kbytes[side].k1.dest_node = dest;\
-    aps->cur_kbytes[side].k2.src_node = src;\
-    aps->cur_kbytes[side].k2.path = pth;\
-    aps->cur_kbytes[side].k2.status = stat;\
+    kbytes[side].k1.brcode = brq;\
+    kbytes[side].k1.dest_node = dest;\
+    kbytes[side].k2.src_node = src;\
+    kbytes[side].k2.path = pth;\
+    kbytes[side].k2.status = stat;\
 }while(0)
+#define UPDATE_CURRENT_KBYTES(side, brq, dest, src, pth, stat)\
+    UPDATE_KBYTES(aps->cur_kbytes, side, brq, dest, src, pth, stat)
 
 #define DRV_KBYTES(side)             aps->drv_kbytes[side]
 #define DRV_KBYTES_K1(side)          aps->drv_kbytes[side].k1
@@ -84,14 +86,6 @@ do{\
 
 #define IS_NE_READY                 aps->is_ne_ready
 
-#define UPDATE_KBYTES(kbytes, side, brq, dest, src, pth, stat)\
-do{\
-    kbytes[side].k1.brcode = brq;\
-    kbytes[side].k1.dest_node = dest;\
-    kbytes[side].k2.src_node = src;\
-    kbytes[side].k2.path = pth;\
-    kbytes[side].k2.status = stat;\
-}while(0)
 int aps_init(struct aps_controller* aps);
 void aps_fini(struct aps_controller* aps);
 void aps_run(struct aps_controller* aps);
