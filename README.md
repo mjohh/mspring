@@ -58,7 +58,8 @@ Output aps results:
     void sendkbyte(int ringid, int slot, int port, struct k1k2 * k1k2) {
         // call drive to send kbytes
     }
-    void doswitch(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], enum node_state state) {
+    void doswitch(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES], 
+                  enum node_state oldstate, enum node_state curstate) {
         // do bridge or
         // switch or
         // bridge and switch or
@@ -68,9 +69,11 @@ Output aps results:
     }
     void startwtr(int ringid, int enable, int sec) {
         if (enable) {
-            trigger a timer, which will generate an wtr timeout input in sec seconds
+            trigger a timer, which will generate an wtr timeout input after sec seconds
         } else {
             stop the timer
         }
     }
+    // output
+    aps_output(&g_aps, sendkbyte, doswitch, startwtr);
 
