@@ -64,5 +64,6 @@ void exer_state_run(struct aps_controller *aps) {
             assert(0);
             break;
     }
+    update_node_state(aps, IDLE);
     //ring_print(aps->node_id, "   exit exer, state = %sn", end_state_name(aps->cur_end_state));
 }
