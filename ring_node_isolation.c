@@ -96,11 +96,10 @@ void get_isolated_nodes(struct aps_controller* aps, int isolated_nodes[], int* n
         first_node = get_neib_node(aps, DRV_KBYTES_SRC(EAST), EAST);
         last_node = get_neib_node(aps, DRV_KBYTES_SRC(WEST), WEST);
     }
+    *num = 0;
     if (first_node == -1 || last_node == -1) {
-        *num = 0;
         return;
     }
-    *num = 0;
     for (node = first_node; node != last_node; node = get_neib_node(aps, node, EAST)) {
         isolated_nodes[(*num)++] = node;
     }
