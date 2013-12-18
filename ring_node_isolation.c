@@ -43,13 +43,11 @@ int is_recv_brq_from_nonneighbours_both_sides(struct aps_controller* aps) {
 // node is isolated if it recieves BRQ (FS,SF) from both side
 // from nodes that are not neighbors.
 int is_isolated(struct aps_controller* aps) {
-  int west_unavailable = is_interface_unavailabe(aps, WEST);
-  int east_unavailable = is_interface_unavailabe(aps, EAST);
-  if (east_unavailable && east_unavailable)
+  if (is_interface_unavailabe(aps, WEST) && is_interface_unavailabe(aps, EAST))
      return 1;
-  if (east_unavailable && is_recv_brq_from_nonneighbour_on_long_side(aps, WEST))
+  if (is_interface_unavailabe(aps, EAST) && is_recv_brq_from_nonneighbour_on_long_side(aps, WEST))
      return 1;
-  if (west_unavailable && is_recv_brq_from_nonneighbour_on_long_side(aps, EAST))
+  if (is_interface_unavailabe(aps, WEST) && is_recv_brq_from_nonneighbour_on_long_side(aps, EAST))
      return 1;
   if (is_recv_brq_from_nonneighbours_both_sides(aps))
      return 1;
@@ -74,22 +72,18 @@ int get_neib_node(struct aps_controller* aps, int nodeid, enum side side) {
 // pls ensure that the array size is not less than MAX_NODES_IN_RING
 // the real number of isolated nodes will return by 'num'
 void get_isolated_nodes(struct aps_controller* aps, int isolated_nodes[], int* num) {
-    int west_unavailable;
-    int east_unavailable;
     int first_node = -1;
     int last_node = -1;
     int node = -1;
     assert(aps && isolated_nodes && num && *num >= MAX_NODES_IN_RING);
-    west_unavailable = is_interface_unavailabe(aps, WEST);
-    east_unavailable = is_interface_unavailabe(aps, EAST);
     
-    if (east_unavailable && east_unavailable) {
+    if (is_interface_unavailabe(aps, WEST) && is_interface_unavailabe(aps, EAST)) {
         first_node = NEIB_NODE_ID(EAST);
         last_node = NEIB_NODE_ID(WEST);
-    } else if (east_unavailable && is_recv_brq_from_nonneighbour_on_long_side(aps, WEST)) {
+    } else if (is_interface_unavailabe(aps, EAST) && is_recv_brq_from_nonneighbour_on_long_side(aps, WEST)) {
         first_node = NEIB_NODE_ID(EAST);
         last_node = get_neib_node(aps, DRV_KBYTES_SRC(WEST), WEST);
-    } else if (west_unavailable && is_recv_brq_from_nonneighbour_on_long_side(aps, EAST)) {
+    } else if (is_interface_unavailabe(aps, WEST) && is_recv_brq_from_nonneighbour_on_long_side(aps, EAST)) {
         first_node = get_neib_node(aps, DRV_KBYTES_SRC(EAST), EAST);
         last_node = NEIB_NODE_ID(WEST);
     } else if (is_recv_brq_from_nonneighbours_both_sides(aps)) {
