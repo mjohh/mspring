@@ -56,9 +56,53 @@ eint is_isolated(struct aps_controller* aps) {
   return 0;
 }
 
+int get_neib_node(struct aps_controller* aps, int nodeid, enum side side) {
+    int i;
+    for (i = 0; i < aps->nodes_num; i++) {
+        if (aps->ring_map[i] = nodeid)
+            break;
+    }
+    assert(i < aps->nodes_num);
+    if (side == WEST)
+        return i == 0 ? aps->ring_map[aps->nodes_num-1] : aps->ring_map[i-1];
+    if (side == EAST)
+        return i == aps->nodes_num-1 ? aps->ring_map[0] : aps->ring_map[i+1];
+    assert(0);
+    return -1;
+}
+
 // pls ensure that the array size is not less than MAX_NODES_IN_RING
 // the real number of isolated nodes will return by 'num'
 void get_isolated_nodes(struct aps_controller* aps, int isolated_nodes[], int* num) {
-    assert(aps && isolated_nodes && num >= MAX_NODES_IN_RING);
-    //if ()
+    int west_unavailable;
+    int east_unavailable;
+    int first_node = -1;
+    int last_node = -1;
+    int node = -1;
+    assert(aps && isolated_nodes && num && *num >= MAX_NODES_IN_RING);
+    west_unavailable = is_interface_unavailabe(aps, WEST);
+    east_unavailable = is_interface_unavailabe(aps, EAST);
+    
+    if (east_unavailable && east_unavailable) {
+        first_node = NEIB_NODE_ID(EAST);
+        last_node = NEIB_NODE_ID(WEST);
+    } else if (east_unavailable && is_recv_brq_from_nonneighbour_on_long_side(WEST)) {
+        first_node = NEIB_NODE_ID(EAST);
+        last_node = get_neib_node(aps, DRV_KBYTES_SRC(WEST), WEST);
+    } else if (west_unavailable && is_recv_brq_from_nonneighbour_on_long_side(EAST)) {
+        first_node = get_neib_node(aps, DRV_KBYTES_SRC(EAST), EAST);
+        last_node = NEIB_NODE_ID(WEST);
+    } else if (is_recv_brq_from_nonneighbours_both_sides(aps)) {
+        first_node = get_neib_node(aps, DRV_KBYTES_SRC(EAST), EAST);
+        last_node = get_neib_node(aps, DRV_KBYTES_SRC(WEST), WEST);
+    }
+    if (first_node == -1 || last_node == -1) {
+        *num = 0;
+        return;
+    }
+    *num = 0;
+    for (node = first_node; node != last_node; node = get_neib_node(aps, node, EAST)) {
+        isolated_nodes[(*num)++] = node;
+    }
+    isolated_nodes[(*num)] = node;
 }
