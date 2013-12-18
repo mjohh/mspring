@@ -18,10 +18,10 @@ int aps_init(struct aps_controller *aps) {
     aps->ext_cmd = EX_NONE;
     aps->ext_side = UNDEFINED_SIDE;
     aps->is_ne_ready = 0;
-    aps->is_wtr_timeout = 0;
     // init output
     memset(aps->cur_kbytes, 0, sizeof(aps->cur_kbytes));
     aps->is_wtr_start = 0;
+    aps->time_elapse = 0;
     aps->node_state = IDLE;
     // init input filter
     memset(aps->drv_kbytes_filter, 0, sizeof(aps->drv_kbytes_filter));
@@ -30,10 +30,9 @@ int aps_init(struct aps_controller *aps) {
     aps->ext_cmd_filter = EX_NONE;
     aps->ext_side_filter = UNDEFINED_SIDE;
     aps->is_ne_ready_filter = 0;
-    aps->is_wtr_timeout_filter = 0;
+    aps->time_filter = 0;
     // int output filter
     memset(aps->cur_kbytes_filter, 0, sizeof(aps->cur_kbytes_filter));
-    aps->is_wtr_start_filter = 0;
     aps->node_state_filter = IDLE;
     // init sm
     end_state_init(aps);
@@ -74,8 +73,8 @@ int input_changed(struct aps_controller *aps) {
         aps->is_ne_ready_filter = aps->is_ne_ready;
         changed++;
     }
-    if (aps->is_wtr_timeout != aps->is_wtr_timeout_filter) {
-        aps->is_wtr_timeout_filter = aps->is_wtr_timeout;
+    if (aps->time_filter) {
+        aps->time_filter = 0;
         changed++;
     }
     return changed;
@@ -114,23 +113,14 @@ void aps_input_ne_ready_flag(struct aps_controller *aps, int is_ne_ready) {
     aps->is_ne_ready = is_ne_ready;
 }
 
-void aps_input_wtr_timeout_flag(struct aps_controller *aps, int is_wtr_timeout) {
-    assert(aps);
-    aps->is_wtr_timeout = is_wtr_timeout;
+void aps_input_time_periodly(struct aps_controller * aps, int period) {
+    assert(aps && period > 0);
+    aps->time_elapse += period;
+    aps->time_filter = 1;
 }
 
-void aps_output(struct aps_controller* aps,
-               void (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES],
-                                enum node_state oldstate, enum node_state curstate),
-               void (*startwtr)(int ringid, int enable, int sec)) {
+void aps_output_kbytes(struct aps_controller* aps, void (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2)) {
     assert(aps);
-    if (doswitch) {
-        if (aps->node_state != aps->node_state_filter) {
-            doswitch(aps->ring_id, aps->slot, aps->port, aps->node_state_filter, aps->node_state);
-            aps->node_state_filter = aps->node_state;
-        }
-    }
     if (sendkbyte) {
         if (memcmp(&aps->cur_kbytes[WEST], &aps->cur_kbytes_filter[WEST], sizeof(aps->cur_kbytes[WEST]))) {
             sendkbyte(aps->ring_id, aps->slot[WEST], aps->port[WEST], &aps->cur_kbytes[WEST]);
@@ -141,12 +131,29 @@ void aps_output(struct aps_controller* aps,
             memcpy(&aps->cur_kbytes_filter[EAST], &aps->cur_kbytes[EAST], sizeof(aps->cur_kbytes[EAST]));
         }
     }
-    if (startwtr) {
-        if (aps->is_wtr_start != aps->is_wtr_start_filter) {
-            startwtr(aps->ring_id, aps->is_wtr_start, aps->wtr_time);
-            aps->is_wtr_start_filter = aps->is_wtr_start;
+}
+
+void aps_output_switch(struct aps_controller* aps, void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES],
+                                                                    enum node_state oldstate, enum node_state curstate)) {
+    assert(aps);
+    if (doswitch) {
+        if (aps->node_state != aps->node_state_filter) {
+            doswitch(aps->ring_id, aps->slot, aps->port, aps->node_state_filter, aps->node_state);
+            aps->node_state_filter = aps->node_state;
         }
-        
+    }
+}
+
+void get_isolated_nodes(struct aps_controller* aps, int isolated_nodes[], int* num) ;
+void aps_output_squelch(struct aps_controller* aps, void (*squelch)(int ringid, int isolated_nodes[], int num)) {
+    int isolated_nodes[MAX_NODES_IN_RING];
+    int num = MAX_NODES_IN_RING;
+    assert(aps);
+    get_isolated_nodes(aps, isolated_nodes, &num);
+    if (num > 0) {
+        if (squelch) {
+            squelch(aps->ring_id, isolated_nodes, num);
+        }
     }
 }
 

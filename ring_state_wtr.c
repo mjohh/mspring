@@ -13,12 +13,6 @@
 #include <assert.h>
 
 extern void end_state_set(struct aps_controller *aps, enum end_state_id next_state);
-
-static void _stop_timer(struct aps_controller *aps) {
-    aps->is_wtr_timeout = 0;
-    aps->is_wtr_start = 0;
-}
-
 static void _tail_to_br_and_waiting_state(struct aps_controller *aps) {
     enum side other_side = OTHER_SIDE(aps->short_side);
     enum node_state state = (aps->short_side == WEST ? BR_W : BR_E);
@@ -44,22 +38,18 @@ static void _to_wtr_idle_state(struct aps_controller *aps) {
     end_state_set(aps, END_START_UP);
 }
 
-static void wtr_timer_start(struct aps_controller *aps) {
-    aps->is_wtr_timeout = 0;
-    aps->is_wtr_start = 1;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 static void wtr_brsw_state_change(struct aps_controller *aps) {
     if (is_tail_end(aps)) {
         if (SW_SD == aps->cur_sw_state || SW_SF == aps->cur_sw_state) {
             if (!aps->is_wtr_start) {
-                wtr_timer_start(aps);
+                aps->is_wtr_start = 1;
+                aps->time_elapse = 0;
                 _to_brsw_and_waiting_state(aps, WTR, WTR);
-            } else if (aps->is_wtr_timeout) {
+            } else if (aps->time_elapse > aps->wtr_time) {
                 _tail_to_br_and_waiting_state(aps);
                 aps->is_wtr_start = 0;
-                aps->is_wtr_timeout = 0;
+                aps->time_elapse = 0;
                 //ring_print(aps->node_id, "_to_br_and_waiting_staten");
             }
         } else {
@@ -92,7 +82,7 @@ static void wtr_br_and_waiting_state_change(struct aps_controller *aps) {
 ///////////////////////////////////////////////////////////////////////////////
 void wtr_state_init(struct aps_controller *aps) {
     aps->is_wtr_start = 0;
-    aps->is_wtr_timeout = 0;
+    aps->time_elapse = 0;
 }
 
 void wtr_state_fini(struct aps_controller *aps) {
@@ -123,5 +113,6 @@ void wtr_state_run(struct aps_controller *aps) {
 void wtr_state_exit(struct aps_controller *aps) {
     // end state will clean only by switch state
     // for when wtr to switch, wtr need exit firstly, and reuse end state by switch.
-    _stop_timer(aps);
+    aps->is_wtr_start = 0;
+    aps->time_elapse = 0;
 }

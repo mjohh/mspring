@@ -145,8 +145,7 @@ void sf_tail_dq_clear_wtr_timeout(struct aps_controller *aps) {
     assert_tx_kbytes(aps, WEST, WTR, WEST_NODE_ID, MY_NODE_ID, SHORT_PATH, BRSW_STATUS);
     assert_tx_kbytes(aps, EAST, WTR, WEST_NODE_ID, MY_NODE_ID, LONG_PATH, BRSW_STATUS);
     
-    aps->is_wtr_timeout = 1;
-    aps->is_wtr_start = 1;
+    aps->time_elapse = aps->wtr_time+1;
     prim_state_run(aps);
     assert_tx_kbytes(aps, WEST, NR, WEST_NODE_ID, MY_NODE_ID, SHORT_PATH, BR_STATUS);
     assert_tx_kbytes(aps, EAST, NR, WEST_NODE_ID, MY_NODE_ID, LONG_PATH, BR_STATUS);

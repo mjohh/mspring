@@ -11,7 +11,6 @@ struct aps_controller {
     enum ext_cmd ext_cmd;
     enum side ext_side;
     int is_ne_ready; // before ready it src default kbytes.
-    int is_wtr_timeout; // when wtr time out or extcmd release it 's TRUE.
     // output
     struct k1k2 cur_kbytes[NUM_SIDES];
     int is_wtr_start; // when need start wtr timer, set it TRUE.
@@ -22,10 +21,9 @@ struct aps_controller {
     enum ext_cmd ext_cmd_filter;
     enum side ext_side_filter;
     int is_ne_ready_filter;
-    int is_wtr_timeout_filter;
+    int time_filter;
     // output filter
     struct k1k2 cur_kbytes_filter[NUM_SIDES];
-    int is_wtr_start_filter;
     enum node_state node_state_filter;
     // status
     enum side tail_side; // for wtr proc
@@ -33,6 +31,7 @@ struct aps_controller {
     enum primary_state_id cur_prim_state;
     enum switch_state_id cur_sw_state;
     enum end_state_id cur_end_state;
+    int time_elapse;
     // cfg
     unsigned short ring_map[MAX_NODES_IN_RING];
     int nodes_num;
@@ -94,14 +93,11 @@ void aps_input_kbyte(struct aps_controller * aps, enum side side, struct k1k2 * 
 void aps_input_dq(struct aps_controller * aps, enum side side, enum dq dq);
 void aps_input_ext_cmd(struct aps_controller * aps, enum side side, enum ext_cmd ext_cmd);
 void aps_input_ne_ready_flag(struct aps_controller * aps, int is_ne_ready);
-void aps_input_wtr_timeout_flag(struct aps_controller * aps, int is_wtr_timeout);
-    
-void aps_output(struct aps_controller* aps,
-               void (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2),
-               void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES],
-                                enum node_state oldstate, enum node_state curstate),
-               void (*startwtr)(int ringid, int enable, int sec));
-    
+void aps_input_time_periodly(struct aps_controller * aps, int period);//second
+void aps_output_kbytes(struct aps_controller* aps, void (*sendkbyte)(int ringid, int slot, int port, struct k1k2 * k1k2));
+void aps_output_switch(struct aps_controller* aps, void (*doswitch)(int ringid, int slot[NUM_SIDES], int port[NUM_SIDES],
+                                                                    enum node_state oldstate, enum node_state curstate));
+void aps_output_squelch(struct aps_controller* aps, void (*squelch)(int ringid, int isolated_nodes[], int num));
 int aps_cfg(struct aps_controller * aps,
             unsigned short ring_map[MAX_NODES_IN_RING],
             int nodes_num,
