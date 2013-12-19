@@ -72,10 +72,10 @@ Output aps results:
     }
     // output:
     // send kbytes if changed
-    aps_output_kbytes(aps, sendkbyte);
+    aps_output_kbytes(&g_aps, sendkbyte);
     // do if state changed
-    aps_output_switch(aps, doswitch);
+    aps_output_switch(&g_aps, doswitch);
     // do seuelch if isolated node exists, but may be unchanged
-    aps_output_squelch(aps, squelch);
+    aps_output_squelch(&g_aps, squelch);
 
 
