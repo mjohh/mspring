@@ -45,8 +45,8 @@ Input aps conditions:
     struc k1k2 kbyte;
     UPDAE_KBYTES(kbyte, WEST, SF, 2, 1, SHORT_PATH, BRSW_STATUS);
     aps_input_kbyte(&g_aps, &kbyte);
-    // wtr expiration
-    aps_input_wtr_timeout(&g_aps, 1);
+    // called every 2 seconds to driver wtr
+    aps_input_time_periodly(&g_aps, 2);
     
 Run aps:
     
@@ -67,16 +67,15 @@ Output aps results:
         // unswitch or
         // unbridge and unswtch
     }
-    void startwtr(int ringid, int enable, int sec) {
-        if (enable) {
-            trigger a timer, which will generate an wtr timeout input after sec seconds
-        } else {
-            stop the timer
-        }
+    void squelch(int ringid, int isolated_nodes[], int num) {
+        // do squelch according isolated info
     }
     // output:
-    // try send kbytes and
-    // try do switch and
-    // try start or stop wtr timer
-    aps_output(&g_aps, sendkbyte, doswitch, startwtr);
+    // send kbytes if changed
+    aps_output_kbytes(aps, sendkbyte);
+    // do if state changed
+    aps_output_switch(aps, doswitch);
+    // do seuelch if isolated node exists, but may be unchanged
+    aps_output_squelch(aps, squelch);
+
 
